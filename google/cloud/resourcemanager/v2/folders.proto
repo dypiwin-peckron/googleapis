@@ -30,6 +30,12 @@ option java_package = "com.google.cloud.resourcemanager.v2";
 option csharp_namespace = "Google.Cloud.ResourceManager.V2";
 option php_namespace = "Google\\Cloud\\ResourceManager\\V2";
 
+// The "organization" resource is a common resource, currently defined in api-common-protos/.../annotations.proto
+// the "Folder" resource is defined within the "Folder" message in this file
+option (google.api.resource_set_definition) = {
+  name: "Parent",
+  resource_names: ["google.api.Organization", "Folder"]
+};
 
 // Manages Cloud Resource Folders.
 // Cloud Resource Folders can be used to organize the resources under an
@@ -201,11 +207,11 @@ message Folder {
 
   // Output only. The resource name of the Folder.
   // Its format is `folders/{folder_id}`, for example: "folders/1234".
-  string name = 1;
+  string name = 1 [(google.api.resource_definition).path = "folders/{folder}"];
 
   // The Folder’s parent's resource name.
   // Updates to the folder's parent must be performed via [MoveFolders].
-  string parent = 2;
+  string parent = 2 [(google.api.resource_reference) = "Parent"];
 
   // The folder’s display name.
   // A folder’s display name must be unique amongst its siblings, e.g.
@@ -235,7 +241,7 @@ message ListFoldersRequest {
   // Must be of the form `folders/{folder_id}` or `organizations/{org_id}`.
   // Access to this method is controlled by checking the
   // `resourcemanager.folders.list` permission on the `parent`.
-  string parent = 1;
+  string parent = 1 [(google.api.resource_reference) = "Parent"];
 
   // The maximum number of Folders to return in the response.
   // This field is optional.
@@ -309,14 +315,14 @@ message SearchFoldersResponse {
 message GetFolderRequest {
   // The resource name of the Folder to retrieve.
   // Must be of the form `folders/{folder_id}`.
-  string name = 1;
+  string name = 1 [(google.api.resource_reference) = "Folder"];
 }
 
 // The CreateFolder request message.
 message CreateFolderRequest {
   // The resource name of the new Folder's parent.
   // Must be of the form `folders/{folder_id}` or `organizations/{org_id}`.
-  string parent = 1;
+  string parent = 1 [(google.api.resource_reference) = "Parent"];
 
   // The Folder being created, only the display name will be consulted.
   // All other fields will be ignored.
@@ -327,7 +333,7 @@ message CreateFolderRequest {
 message MoveFolderRequest {
   // The resource name of the Folder to move.
   // Must be of the form folders/{folder_id}
-  string name = 1;
+  string name = 1 [(google.api.resource_reference) = "Folder"];
 
   // The resource name of the Folder or Organization to reparent
   // the folder under.
@@ -351,7 +357,7 @@ message UpdateFolderRequest {
 message DeleteFolderRequest {
   // the resource name of the Folder to be deleted.
   // Must be of the form `folders/{folder_id}`.
-  string name = 1;
+  string name = 1 [(google.api.resource_reference) = "Folder"];
 
   // Instructs DeleteFolderAction to delete a folder even when the folder is not
   // empty.
@@ -362,7 +368,7 @@ message DeleteFolderRequest {
 message UndeleteFolderRequest {
   // The resource name of the Folder to undelete.
   // Must be of the form `folders/{folder_id}`.
-  string name = 1;
+  string name = 1 [(google.api.resource_reference) = "Folder"];
 }
 
 // Metadata describing a long running folder operation
@@ -387,9 +393,9 @@ message FolderOperation {
 
   // The resource name of the folder's parent.
   // Only applicable when the operation_type is MOVE.
-  string source_parent = 3;
+  string source_parent = 3 [(google.api.resource_reference) = "Parent"];
 
   // The resource name of the folder or organization we are either creating
   // the folder under or moving the folder to.
-  string destination_parent = 4;
+  string destination_parent = 4 [(google.api.resource_reference) = "Parent"];
 }
